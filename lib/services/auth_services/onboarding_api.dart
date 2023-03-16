@@ -30,7 +30,6 @@ class onboarding_api extends ChangeNotifier {
       isSentOTP = true;
       var response = await http.post(Uri.parse(ApiClient.sendOTPUrl), body: {"mobileNo": mobileNumber, "lattitude": "", "longitude": ""});
       var data = json.decode(response.body.toString());
-      print(response.statusCode);
 
       if (response.statusCode == 200) {
         if (data['status']) {
@@ -55,7 +54,6 @@ class onboarding_api extends ChangeNotifier {
       } else if (response.statusCode == 208) {
         invalidEntryMsg = "";
         new_user_id = data['result']['_id'].toString();
-        print(data['result']['otpAttempts']);
 
         if (data['result']['otpAttempts'] != null) {
           if (data['result']['otpAttempts'] > 4) {
@@ -94,7 +92,6 @@ class onboarding_api extends ChangeNotifier {
       isRegistrationOTPverify = true;
       var response = await http.post(Uri.parse(ApiClient.otpVerifyUrl + new_user_id), body: {"mobileOtp": otp});
       var data = json.decode(response.body.toString());
-      print(response.statusCode);
       if (response.statusCode == 200) {
         otpverificationMsg = data['message'].toString();
         if (data['status']) {
@@ -199,7 +196,6 @@ class onboarding_api extends ChangeNotifier {
       isresendotp = true;
       var response = await http.post(Uri.parse(ApiClient.resendOTPurl + Preference.pref.getString(UserData.USER_ID)));
       var data = json.decode(response.body.toString());
-      print(response.statusCode);
 
       if (response.statusCode == 200) {
         resend_status_code = response.statusCode;
