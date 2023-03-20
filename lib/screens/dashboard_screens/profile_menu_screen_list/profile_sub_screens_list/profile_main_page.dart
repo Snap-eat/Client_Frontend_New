@@ -36,10 +36,7 @@ class profile_main_pageState extends State<profile_main_page> {
           child: CircleAvatar(
             radius: 35,
             backgroundColor: orange,
-            child: CircleAvatar(
-                radius: 32,
-                child: Image.asset(menuIcon),
-                backgroundColor: white),
+            child: CircleAvatar(radius: 32, child: Image.asset(menuIcon), backgroundColor: white),
           ),
         ),
       ),
@@ -65,7 +62,6 @@ class profile_main_pageState extends State<profile_main_page> {
                       pushTo(my_details()); // call to  MyDetails screen
                     }, MY_DETAILS),
                     Divider(),
-
                     customListtile(() {}, MY_FOOD_PREFERENCES),
                     Divider(),
                     customListtile(() {
@@ -77,13 +73,12 @@ class profile_main_pageState extends State<profile_main_page> {
                     }, SAVED_ADDRESS),
                     Divider(),
                     customListtile(() {
-                      pustAndRemoveUntil(enter_mobile(
-                        dialcode: Preference.pref
-                            .getString(UserData.DIAL_CODE.toString()),
-                        countrycode: Preference.pref
-                            .getString(UserData.COUNTRY_CODE.toString()),
-                      ));
+                      enter_mobile.mobileNo = "";
                       Preference.pref.clear();
+                      pustAndRemoveUntil(enter_mobile(
+                        dialcode: "44",
+                        countrycode: "GB",
+                      ));
                       setState(() {});
                     }, LOG_OUT),
                     Divider(),

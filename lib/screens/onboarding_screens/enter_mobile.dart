@@ -32,7 +32,7 @@ class enter_mobileState extends State<enter_mobile> {
   bool visible = false;
   String errormsg = '';
   var countryCode = "GB";
-  var dialcode = "+44";
+  var dialcode = "44";
 
   @override
   void initState() {
@@ -73,121 +73,53 @@ class enter_mobileState extends State<enter_mobile> {
                   press: () async {
                     if (isValidate()) {
                       if (numberController.text.isNotEmpty && numberController.text.toString() != "0") {
-                        if (numberController.text.length > 8) {
-                          if (numberController.text.startsWith("+")) {
-                            if (numberController.text.contains(dialcode)) {
-                              var mobileNo = numberController.text.replaceAll(dialcode, "");
-                              mobileNo = mobileNo.replaceAll("+", "");
+                        if (numberController.text.startsWith("+")) {
+                          if (numberController.text.contains(dialcode)) {
+                            var mobileNo = numberController.text.replaceAll(dialcode, "");
+                            mobileNo = mobileNo.replaceAll("+", "");
 
-                              if (dialcode == "44") {
-                                if (mobileNo.length > 8) {
-                                  setState(() {
-                                    changeValue.isSentOTP = true;
-                                  });
-                                  await changeValue.sendOTPApi(numberController.text).then((value) {
-                                    setState(() => changeValue.invalidEntryMsg = errormsg);
-                                    setState(() {
-                                      enter_mobile.mobileNo = numberController.text;
-                                    });
-                                    showHideDiscountCode();
-
-                                    setState(() => changeValue.isSentOTP = false);
-                                  });
-                                } else {
-                                  changeValue.invalidEntryMsg = ENTER_VALID_NUMBER;
-                                  setState(() {});
-                                }
-                              } else {
-                                setState(() {
-                                  changeValue.isSentOTP = true;
-                                });
-                                await changeValue.sendOTPApi(numberController.text).then((value) {
-                                  setState(() => changeValue.invalidEntryMsg = errormsg);
-                                  setState(() {
-                                    enter_mobile.mobileNo = numberController.text;
-                                  });
-                                  showHideDiscountCode();
-
-                                  setState(() => changeValue.isSentOTP = false);
-                                });
-                              }
-                            } else {
+                            setState(() {
+                              changeValue.isSentOTP = true;
+                            });
+                            await changeValue.sendOTPApi(mobileNo, "+" + dialcode).then((value) {
                               setState(() {
-                                changeValue.invalidEntryMsg = ENTER_VALID_NUMBER;
+                                enter_mobile.mobileNo = numberController.text;
                               });
-                            }
-                          } else if (numberController.text.startsWith("0")) {
-                            var mobileNo = numberController.text.replaceFirst("0", "");
+                              showHideDiscountCode();
 
-                            if (dialcode == "44") {
-                              if (mobileNo.length > 8) {
-                                setState(() {
-                                  changeValue.isSentOTP = true;
-                                });
-                                await changeValue.sendOTPApi(dialcode + mobileNo).then((value) {
-                                  setState(() => changeValue.invalidEntryMsg = errormsg);
-                                  setState(() {
-                                    enter_mobile.mobileNo = numberController.text;
-                                  });
-                                  showHideDiscountCode();
-
-                                  setState(() => changeValue.isSentOTP = false);
-                                });
-                              } else {
-                                changeValue.invalidEntryMsg = ENTER_VALID_NUMBER;
-                                setState(() {});
-                              }
-                            } else {
-                              setState(() {
-                                changeValue.isSentOTP = true;
-                              });
-                              await changeValue.sendOTPApi(dialcode + mobileNo).then((value) {
-                                setState(() => changeValue.invalidEntryMsg = errormsg);
-                                setState(() {
-                                  enter_mobile.mobileNo = numberController.text;
-                                });
-                                showHideDiscountCode();
-
-                                setState(() => changeValue.isSentOTP = false);
-                              });
-                            }
+                              setState(() => changeValue.isSentOTP = false);
+                            });
                           } else {
-                            if (dialcode == "44") {
-                              if (numberController.text.length > 8) {
-                                setState(() {
-                                  changeValue.isSentOTP = true;
-                                });
-                                await changeValue.sendOTPApi(dialcode + numberController.text).then((value) {
-                                  setState(() => changeValue.invalidEntryMsg = errormsg);
-                                  setState(() {
-                                    enter_mobile.mobileNo = numberController.text;
-                                  });
-                                  showHideDiscountCode();
-
-                                  setState(() => changeValue.isSentOTP = false);
-                                });
-                              } else {
-                                changeValue.invalidEntryMsg = ENTER_VALID_NUMBER;
-                                setState(() {});
-                              }
-                            } else {
-                              setState(() {
-                                changeValue.isSentOTP = true;
-                              });
-                              await changeValue.sendOTPApi(dialcode + numberController.text).then((value) {
-                                setState(() => changeValue.invalidEntryMsg = errormsg);
-                                setState(() {
-                                  enter_mobile.mobileNo = numberController.text;
-                                });
-                                showHideDiscountCode();
-
-                                setState(() => changeValue.isSentOTP = false);
-                              });
-                            }
+                            setState(() {
+                              changeValue.invalidEntryMsg = ENTER_VALID_NUMBER;
+                            });
                           }
+                        } else if (numberController.text.startsWith("0")) {
+                          var mobileNo = numberController.text.replaceFirst("0", "");
+
+                          setState(() {
+                            changeValue.isSentOTP = true;
+                          });
+                          await changeValue.sendOTPApi(mobileNo, "+" + dialcode).then((value) {
+                            setState(() {
+                              enter_mobile.mobileNo = numberController.text;
+                            });
+                            showHideDiscountCode();
+
+                            setState(() => changeValue.isSentOTP = false);
+                          });
                         } else {
                           setState(() {
-                            changeValue.invalidEntryMsg = INCOMPLETE_NUMBER;
+                            changeValue.isSentOTP = true;
+                          });
+
+                          await changeValue.sendOTPApi(numberController.text, "+" + dialcode).then((value) {
+                            setState(() {
+                              enter_mobile.mobileNo = numberController.text;
+                            });
+                            showHideDiscountCode();
+
+                            setState(() => changeValue.isSentOTP = false);
                           });
                         }
                       } else {
@@ -208,239 +140,167 @@ class enter_mobileState extends State<enter_mobile> {
           children: [
             SingleChildScrollView(
               physics: NeverScrollableScrollPhysics(),
-              child: GestureDetector(
-                onTap: () {},
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 30,
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 85, bottom: 22, left: 30, right: 30),
+                    child: AlgeraText2(ENTER_YOUR_MOBILE_NUMBER, Colors.white, FontWeight.w500, 30),
                   ),
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          top: 85,
-                          bottom: 22,
-                        ),
-                        child: AlgeraText2(ENTER_YOUR_MOBILE_NUMBER, Colors.white, FontWeight.w500, 30),
-                      ),
-                    ),
-                    Container(
-                      height: 60,
-                      padding: const EdgeInsets.only(
-                        top: 8,
-                      ),
-                      alignment: Alignment.centerLeft,
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: white),
-                      child: IntlPhoneFieldPicker(
-                        keyboardAppearance: Brightness.light,
-                        textInputAction: TextInputAction.done,
-                        autofocus: true,
-                        cursorColor: primary,
-                        textAlignVertical: TextAlignVertical.center,
-                        onCountryChanged: (value) {
-                          setState(() => dialcode = value.dialCode);
+                ),
+                Container(
+                  height: 60,
+                  margin: EdgeInsets.symmetric(horizontal: 30),
+                  padding: const EdgeInsets.only(
+                    top: 8,
+                  ),
+                  alignment: Alignment.centerLeft,
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: white),
+                  child: IntlPhoneFieldPicker(
+                    keyboardAppearance: Brightness.light,
+                    textInputAction: TextInputAction.done,
+                    autofocus: true,
+                    cursorColor: primary,
+                    textAlignVertical: TextAlignVertical.center,
+                    onCountryChanged: (value) {
+                      setState(() => dialcode = value.dialCode);
+                      Preference.pref.setString(UserData.COUNTRY_CODE, value.code.toString());
+                      Preference.pref.setString(UserData.DIAL_CODE, value.dialCode.toString());
+                    },
+                    controller: numberController,
+                    onSubmitted: (value) async {
+                      if (isValidate()) {
+                        if (numberController.text.isNotEmpty && numberController.text.toString() != "0") {
+                          if (numberController.text.startsWith("+")) {
+                            if (numberController.text.contains(dialcode)) {
+                              var mobileNo = numberController.text.replaceAll(dialcode, "");
+                              mobileNo = mobileNo.replaceAll("+", "");
 
-                          Preference.pref.setString(UserData.COUNTRY_CODE, value.code.toString());
-                          Preference.pref.setString(UserData.DIAL_CODE, value.dialCode.toString());
-                        },
-                        controller: numberController,
-                        onSubmitted: (value) async {
-                          if (isValidate()) {
-                            if (numberController.text.isNotEmpty && numberController.text.toString() != "0") {
-                              if (numberController.text.length > 8) {
-                                if (numberController.text.startsWith("+")) {
-                                  if (numberController.text.contains(dialcode)) {
-                                    var mobileNo = numberController.text.replaceAll(dialcode, "");
-                                    mobileNo = mobileNo.replaceAll("+", "");
-
-                                    if (dialcode == "44") {
-                                      if (mobileNo.length > 8) {
-                                        setState(() {
-                                          changeValue.isSentOTP = true;
-                                        });
-                                        await changeValue.sendOTPApi(numberController.text).then((value) {
-                                          setState(() => changeValue.invalidEntryMsg = errormsg);
-                                          setState(() {
-                                            enter_mobile.mobileNo = numberController.text;
-                                          });
-                                          showHideDiscountCode();
-
-                                          setState(() => changeValue.isSentOTP = false);
-                                        });
-                                      } else {
-                                        changeValue.invalidEntryMsg = ENTER_VALID_NUMBER;
-                                        setState(() {});
-                                      }
-                                    } else {
-                                      setState(() {
-                                        changeValue.isSentOTP = true;
-                                      });
-                                      await changeValue.sendOTPApi(numberController.text).then((value) {
-                                        setState(() => changeValue.invalidEntryMsg = errormsg);
-                                        setState(() {
-                                          enter_mobile.mobileNo = numberController.text;
-                                        });
-                                        showHideDiscountCode();
-
-                                        setState(() => changeValue.isSentOTP = false);
-                                      });
-                                    }
-                                  } else {
-                                    setState(() {
-                                      changeValue.invalidEntryMsg = ENTER_VALID_NUMBER;
-                                    });
-                                  }
-                                } else if (numberController.text.startsWith("0")) {
-                                  var mobileNo = numberController.text.replaceFirst("0", "");
-
-                                  if (dialcode == "44") {
-                                    if (mobileNo.length > 8) {
-                                      setState(() {
-                                        changeValue.isSentOTP = true;
-                                      });
-                                      await changeValue.sendOTPApi(dialcode + mobileNo).then((value) {
-                                        setState(() => changeValue.invalidEntryMsg = errormsg);
-                                        setState(() {
-                                          enter_mobile.mobileNo = numberController.text;
-                                        });
-                                        showHideDiscountCode();
-
-                                        setState(() => changeValue.isSentOTP = false);
-                                      });
-                                    } else {
-                                      changeValue.invalidEntryMsg = ENTER_VALID_NUMBER;
-                                      setState(() {});
-                                    }
-                                  } else {
-                                    setState(() {
-                                      changeValue.isSentOTP = true;
-                                    });
-                                    await changeValue.sendOTPApi(dialcode + mobileNo).then((value) {
-                                      setState(() => changeValue.invalidEntryMsg = errormsg);
-                                      setState(() {
-                                        enter_mobile.mobileNo = numberController.text;
-                                      });
-                                      showHideDiscountCode();
-
-                                      setState(() => changeValue.isSentOTP = false);
-                                    });
-                                  }
-                                } else {
-                                  if (dialcode == "44") {
-                                    if (numberController.text.length > 8) {
-                                      setState(() {
-                                        changeValue.isSentOTP = true;
-                                      });
-                                      await changeValue.sendOTPApi(dialcode + numberController.text).then((value) {
-                                        setState(() => changeValue.invalidEntryMsg = errormsg);
-                                        setState(() {
-                                          enter_mobile.mobileNo = numberController.text;
-                                        });
-                                        showHideDiscountCode();
-
-                                        setState(() => changeValue.isSentOTP = false);
-                                      });
-                                    } else {
-                                      changeValue.invalidEntryMsg = ENTER_VALID_NUMBER;
-                                      setState(() {});
-                                    }
-                                  } else {
-                                    setState(() {
-                                      changeValue.isSentOTP = true;
-                                    });
-                                    await changeValue.sendOTPApi(dialcode + numberController.text).then((value) {
-                                      setState(() => changeValue.invalidEntryMsg = errormsg);
-                                      setState(() {
-                                        enter_mobile.mobileNo = numberController.text;
-                                      });
-                                      showHideDiscountCode();
-
-                                      setState(() => changeValue.isSentOTP = false);
-                                    });
-                                  }
-                                }
-                              } else {
+                              setState(() {
+                                changeValue.isSentOTP = true;
+                              });
+                              await changeValue.sendOTPApi(mobileNo, "+" + dialcode).then((value) {
                                 setState(() {
-                                  changeValue.invalidEntryMsg = INCOMPLETE_NUMBER;
+                                  enter_mobile.mobileNo = numberController.text;
                                 });
-                              }
+                                showHideDiscountCode();
+
+                                setState(() => changeValue.isSentOTP = false);
+                              });
                             } else {
                               setState(() {
                                 changeValue.invalidEntryMsg = ENTER_VALID_NUMBER;
                               });
                             }
+                          } else if (numberController.text.startsWith("0")) {
+                            var mobileNo = numberController.text.replaceFirst("0", "");
+
+                            setState(() {
+                              changeValue.isSentOTP = true;
+                            });
+                            await changeValue.sendOTPApi(mobileNo, "+" + dialcode).then((value) {
+                              setState(() {
+                                enter_mobile.mobileNo = numberController.text;
+                              });
+                              showHideDiscountCode();
+
+                              setState(() => changeValue.isSentOTP = false);
+                            });
+                          } else {
+                            setState(() {
+                              changeValue.isSentOTP = true;
+                            });
+
+                            await changeValue.sendOTPApi(numberController.text, "+" + dialcode).then((value) {
+                              setState(() {
+                                enter_mobile.mobileNo = numberController.text;
+                              });
+                              showHideDiscountCode();
+
+                              setState(() => changeValue.isSentOTP = false);
+                            });
+                          }
+                        } else {
+                          setState(() {
+                            changeValue.invalidEntryMsg = ENTER_VALID_NUMBER;
+                          });
+                        }
+                        setState(() {
+                          visible = true;
+                        });
+                      }
+                    },
+                    style: TextStyle(color: Colors.black87, fontSize: 20, fontWeight: FontWeight.w500),
+                    decoration: InputDecoration(
+                        alignLabelWithHint: true,
+                        suffixIcon: IconButton(
+                            onPressed: () {
+                              if (numberController.text.isNotEmpty) {
+                                numberController.clear();
+                                visible = false;
+                                context.read<onboarding_api>().invalidEntryMsg = errormsg;
+                                setState(() {});
+                              }
+                            },
+                            icon: const Icon(
+                              Icons.cancel,
+                              color: greyblack,
+                            )),
+                        hintText: "7974836228",
+                        errorText: '',
+                        errorStyle: TextStyle(fontSize: 0, height: 0),
+                        counterText: '',
+                        counterStyle: TextStyle(color: Colors.transparent, height: 0, fontSize: 0),
+                        counter: Offstage(
+                          offstage: true,
+                        ),
+                        contentPadding: EdgeInsets.only(top: h * 0.005),
+                        hintStyle: TextStyle(fontSize: 20, color: greyblack, fontWeight: FontWeight.w500),
+                        border: InputBorder.none),
+                    initialCountryCode: widget.countrycode.toString(),
+                    showDropdownIcon: true,
+                    onChanged: (phone) {
+                      setState(() {
+                        enter_mobile.isChange = true;
+                      });
+                      if (phone.number.isNotEmpty) {
+                        phone.number = phone.number.split("+").last.split(" ").toList().join().split("-").toList().join();
+
+                        visible = true;
+                        setState(() {
+                          context.read<onboarding_api>().invalidEntryMsg = "";
+                        });
+                      } else {
+                        visible = false;
+                        setState(() {});
+                      }
+                    },
+                  ),
+                ),
+                Visibility(
+                  visible: context.watch<onboarding_api>().invalidEntryMsg != "",
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 30),
+                    child: IBMPlexsansText(context.read<onboarding_api>().invalidEntryMsg, red, FontWeight.w400, 18),
+                  ),
+                ),
+                SizedBox(
+                  height: h * 0.02,
+                ),
+                showDiscountCode
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                        child: customTextFormField((value) {}, (value) {
+                          if (discountController.text.isNotEmpty) {
                             setState(() {
                               visible = true;
                             });
-                          }
-                        },
-                        style: TextStyle(color: Colors.black87, fontSize: 20, fontWeight: FontWeight.w500),
-                        decoration: InputDecoration(
-                            alignLabelWithHint: true,
-                            suffixIcon: IconButton(
-                                onPressed: () {
-                                  if (numberController.text.isNotEmpty) {
-                                    numberController.clear();
-                                    visible = false;
-                                    context.read<onboarding_api>().invalidEntryMsg = errormsg;
-                                    setState(() {});
-                                  }
-                                },
-                                icon: const Icon(
-                                  Icons.cancel,
-                                  color: greyblack,
-                                )),
-                            hintText: "7974836228",
-                            errorText: '',
-                            errorStyle: TextStyle(fontSize: 0, height: 0),
-                            counterText: '',
-                            counterStyle: TextStyle(color: Colors.transparent, height: 0, fontSize: 0),
-                            counter: Offstage(
-                              offstage: true,
-                            ),
-                            contentPadding: EdgeInsets.only(top: h * 0.005),
-                            hintStyle: TextStyle(fontSize: 20, color: greyblack, fontWeight: FontWeight.w500),
-                            border: InputBorder.none),
-                        initialCountryCode: widget.countrycode.toString(),
-                        showDropdownIcon: true,
-                        onChanged: (phone) {
-                          setState(() {
-                            enter_mobile.isChange = true;
-                          });
-                          if (phone.number.isNotEmpty) {
-                            phone.number = phone.number.split("+").last.split(" ").toList().join().split("-").toList().join();
-
-                            visible = true;
-                            setState(() {
-                              context.read<onboarding_api>().invalidEntryMsg = "";
-                            });
                           } else {
-                            visible = false;
-                            setState(() {});
+                            setState(() {
+                              visible = false;
+                            });
                           }
                         },
-                      ),
-                    ),
-                    Visibility(
-                      visible: context.watch<onboarding_api>().invalidEntryMsg != "",
-                      child: IBMPlexsansText(context.read<onboarding_api>().invalidEntryMsg, red, FontWeight.w400, 18),
-                    ),
-                    SizedBox(
-                      height: h * 0.02,
-                    ),
-                    showDiscountCode
-                        ? customTextFormField((value) {}, (value) {
-                            if (discountController.text.isNotEmpty) {
-                              setState(() {
-                                visible = true;
-                              });
-                            } else {
-                              setState(() {
-                                visible = false;
-                              });
-                            }
-                          },
                             false,
                             discountController,
                             AutofillHints.telephoneNumber,
@@ -459,60 +319,59 @@ class enter_mobileState extends State<enter_mobile> {
                                   color: greyblack,
                                 ),
                               ),
-                            ))
-                        : Center(
-                            child: InkWell(
-                                onTap: () {
-                                  showDiscountCode = true;
-                                  setState(() {});
-                                },
-                                child: TextUnderline(HAVE_DISCOUNT_CODE, primary1, FontWeight.w500, 21, transparent, primary1)),
-                          ),
-                    Padding(
-                      padding: EdgeInsets.only(top: h * 0.04, bottom: h * 0.01),
-                      child: Center(child: TextWithShadowIBMPlex(GET_30_REWARDSTXT, Colors.white, FontWeight.w600, 17)),
-                    ),
-                    Center(
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          text: REDEEMABLE_ON_FIRST,
-                          style: GoogleFonts.ibmPlexSans(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                              shadows: <Shadow>[
-                                Shadow(
-                                  offset: Offset(0, 2),
-                                  blurRadius: 2,
-                                  color: black.withOpacity(0.3),
-                                ),
-                              ],
-                              color: white),
-                          children: <TextSpan>[
-                            TextSpan(
-                              text: T_AND_C,
-                              style: GoogleFonts.ibmPlexSans(fontWeight: FontWeight.w500, shadows: [Shadow(offset: Offset(0, -1), color: blue)], fontSize: 14, decorationColor: blue, decoration: TextDecoration.underline, color: transparent),
-                            ),
-                            TextSpan(
-                                text: FOR_FULL_DETAIL,
-                                style: GoogleFonts.ibmPlexSans(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 14,
-                                    shadows: <Shadow>[
-                                      Shadow(
-                                        offset: Offset(0, 2),
-                                        blurRadius: 2,
-                                        color: black.withOpacity(0.3),
-                                      ),
-                                    ],
-                                    color: white)),
-                          ],
-                        ),
+                            )),
+                      )
+                    : Center(
+                        child: InkWell(
+                            onTap: () {
+                              showDiscountCode = true;
+                              setState(() {});
+                            },
+                            child: TextUnderline(HAVE_DISCOUNT_CODE, primary1, FontWeight.w500, 21, transparent, primary1)),
                       ),
-                    ),
-                  ]),
+                Padding(
+                  padding: EdgeInsets.only(top: h * 0.04, bottom: h * 0.01, left: 30, right: 30),
+                  child: Center(child: TextWithShadowIBMPlex(GET_30_REWARDSTXT, Colors.white, FontWeight.w600, 17)),
                 ),
-              ),
+                Center(
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      text: REDEEMABLE_ON_FIRST,
+                      style: GoogleFonts.ibmPlexSans(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                          shadows: <Shadow>[
+                            Shadow(
+                              offset: Offset(0, 2),
+                              blurRadius: 2,
+                              color: black.withOpacity(0.3),
+                            ),
+                          ],
+                          color: white),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: T_AND_C,
+                          style: GoogleFonts.ibmPlexSans(fontWeight: FontWeight.w500, shadows: [Shadow(offset: Offset(0, -1), color: blue)], fontSize: 14, decorationColor: blue, decoration: TextDecoration.underline, color: transparent),
+                        ),
+                        TextSpan(
+                            text: FOR_FULL_DETAIL,
+                            style: GoogleFonts.ibmPlexSans(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14,
+                                shadows: <Shadow>[
+                                  Shadow(
+                                    offset: Offset(0, 2),
+                                    blurRadius: 2,
+                                    color: black.withOpacity(0.3),
+                                  ),
+                                ],
+                                color: white)),
+                      ],
+                    ),
+                  ),
+                ),
+              ]),
             ),
             // call to Circular Progress indicator for waiting data
             changeValue.isSentOTP ? customLoader : Container()

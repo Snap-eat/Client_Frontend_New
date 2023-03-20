@@ -42,7 +42,7 @@ class otp_verifyState extends State<otp_verify> {
   @override
   void initState() {
     if (otp_verify.errorMessage.isNotEmpty) {
-      _start = 15;
+      _start = 0;
       resend_code_visibility = false;
       context.read<onboarding_api>().otpverificationMsg = otp_verify.errorMessage.toString();
       setState(() {});
@@ -55,7 +55,6 @@ class otp_verifyState extends State<otp_verify> {
         });
       }
     }
-
     super.initState();
   }
 
@@ -136,12 +135,14 @@ class otp_verifyState extends State<otp_verify> {
                               setState(() {});
                               await changeValue.otpVerify(otpbox.text.toString()).then((value) {
                                 changeValue.isRegistrationOTPverify = false;
+                                if (changeData.otpverificationMsg.isNotEmpty) {
+                                  otpbox.text = "";
+                                } else {
+                                  changeData.otpverificationMsg = otp_verify.errorMessage.toString();
+                                }
                                 setState(() {});
                               });
                               changeValue.isRegistrationOTPverify = false;
-                              setState(() {});
-                              changeValue.isRegistrationOTPverify = false;
-
                               setState(() {});
                             }
                           },
@@ -237,6 +238,11 @@ class otp_verifyState extends State<otp_verify> {
                             setState(() {});
                             await changeData.otpVerify(otpbox.text.toString()).then((value) {
                               changeData.isRegistrationOTPverify = false;
+                              if (changeData.otpverificationMsg.isNotEmpty) {
+                                otpbox.text = "";
+                              } else {
+                                changeData.otpverificationMsg = otp_verify.errorMessage.toString();
+                              }
                               setState(() {});
                             });
                             changeData.isRegistrationOTPverify = false;
@@ -244,11 +250,7 @@ class otp_verifyState extends State<otp_verify> {
                           },
                           onChanged: (value) {
                             setState(() {
-                              pinFocus.hasFocus ? context.read<onboarding_api>().otpverificationMsg = "" : context.read<onboarding_api>().otpverificationMsg;
-
-                              // if (pinFocus.hasFocus) {
-                              //   setState(() => resend_code_visibility = true);
-                              // }
+                              pinFocus.hasFocus ? context.read<onboarding_api>().otpverificationMsg = otp_verify.errorMessage.toString() : context.read<onboarding_api>().otpverificationMsg;
                             });
                             if (value.length < 4) {
                               setState(() {
@@ -266,7 +268,9 @@ class otp_verifyState extends State<otp_verify> {
                         ),
                       ),
 
-                      Visibility(visible: context.watch<onboarding_api>().otpverificationMsg != "", child: Container(child: IBMPlexsans2(context.read<onboarding_api>().otpverificationMsg, red, FontWeight.w500, 15))),
+                      Visibility(
+                          visible: context.watch<onboarding_api>().otpverificationMsg != "",
+                          child: Container(padding: EdgeInsets.only(left: w * 0.075, right: w * 0.075), child: IBMPlexsans2(context.read<onboarding_api>().otpverificationMsg, red, FontWeight.w500, 15))),
                       SizedBox(
                         height: h * 0.005,
                       ),
@@ -303,8 +307,9 @@ class otp_verifyState extends State<otp_verify> {
                                           setState(() {});
                                         } else {
                                           resend_code_visibility = false;
-                                          otp_verify.errorMessage = '${RESEND_CODE_ERROR_MESSAGE} +${widget.number}';
-                                          context.read<onboarding_api>().otpverificationMsg = '${RESEND_CODE_ERROR_MESSAGE} +${widget.number}';
+                                          otp_verify.errorMessage = RESEND_CODE_ERROR_MESSAGE + " " + widget.number;
+                                          print(otp_verify.errorMessage);
+                                          context.read<onboarding_api>().otpverificationMsg = RESEND_CODE_ERROR_MESSAGE + " " + widget.number;
                                           setState(() {});
                                         }
                                       },

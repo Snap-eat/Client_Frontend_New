@@ -25,10 +25,10 @@ class onboarding_api extends ChangeNotifier {
   // Registration Api..
   var invalidEntryMsg = '';
   bool isSentOTP = false;
-  Future sendOTPApi(var mobileNumber) async {
+  Future sendOTPApi(var mobileNumber, var countryCode) async {
     try {
       isSentOTP = true;
-      var response = await http.post(Uri.parse(ApiClient.sendOTPUrl), body: {"mobileNo": mobileNumber, "lattitude": "", "longitude": ""});
+      var response = await http.post(Uri.parse(ApiClient.sendOTPUrl), body: {"mobileNo": mobileNumber, "conuntrycode": countryCode, "lattitude": "", "longitude": ""});
       var data = json.decode(response.body.toString());
 
       if (response.statusCode == 200) {
@@ -74,9 +74,9 @@ class onboarding_api extends ChangeNotifier {
         invalidEntryMsg = data['message'].toString();
         isSentOTP = false;
         notifyListeners();
+        return data;
       }
     } catch (e) {
-      // invalidEntryMsg = e.toString();
       invalidEntryMsg = "Server error";
       isSentOTP = false;
       notifyListeners();
@@ -92,6 +92,8 @@ class onboarding_api extends ChangeNotifier {
       isRegistrationOTPverify = true;
       var response = await http.post(Uri.parse(ApiClient.otpVerifyUrl + new_user_id), body: {"mobileOtp": otp});
       var data = json.decode(response.body.toString());
+      print(response.statusCode);
+
       if (response.statusCode == 200) {
         otpverificationMsg = data['message'].toString();
         if (data['status']) {
@@ -111,16 +113,20 @@ class onboarding_api extends ChangeNotifier {
           return data;
         } else {
           otpverificationMsg = "The OTP passcode you entered is incorrect.";
+          notifyListeners();
+          return data;
         }
       } else {
         Preference.pref.setString(UserData.TOKEN, data['token'].toString());
         isRegistrationOTPverify = false;
+        print(otp_verify.errorMessage);
         if (otp_verify.errorMessage.isNotEmpty) {
-          otpverificationMsg = "The OTP passcode you entered is incorrect." + otp_verify.errorMessage.toString();
+          otpverificationMsg = "The OTP passcode you entered is incorrect.\n" + otp_verify.errorMessage.toString();
         } else {
           otpverificationMsg = "The OTP passcode you entered is incorrect.";
         }
         notifyListeners();
+        return data;
       }
     } catch (e) {
       isRegistrationOTPverify = false;
@@ -196,13 +202,13 @@ class onboarding_api extends ChangeNotifier {
       isresendotp = true;
       var response = await http.post(Uri.parse(ApiClient.resendOTPurl + Preference.pref.getString(UserData.USER_ID)));
       var data = json.decode(response.body.toString());
+      print(response.statusCode);
 
       if (response.statusCode == 200) {
         resend_status_code = response.statusCode;
         if (data['status']) {
           otpverificationMsg = '';
           isresendotp = false;
-
           customSnackbar("New code sent");
           notifyListeners();
           return data;
@@ -210,6 +216,7 @@ class onboarding_api extends ChangeNotifier {
       } else if (response.statusCode == 401) {
         resend_status_code = response.statusCode;
         otpverificationMsg = data['message'].toString();
+        otp_verify.errorMessage = data['message'].toString();
         isresendotp = false;
         notifyListeners();
         return data;
